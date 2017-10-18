@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Button
+        android:id="@+id/btnStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnPlay"
+        android:layout_alignBottom="@+id/btnPlay"
+        android:layout_toEndOf="@+id/btnPlay"
+        android:text="Stop" />
+
+    <RelativeLayout
+        android:id="@+id/video_container"
+        android:layout_width="500dp"
+        android:layout_height="200dp">
+
+    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+        android:id="@+id/video_player"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+
+        <EditText
+            android:id="@+id/etURL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/video_container"
+            android:ems="10"
+            android:inputType="textUri"
+            android:text="http://192.168.100.10:8080/api/hls/10/master.m3u8" />
+
+        <Button
+            android:id="@+id/btnPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/etURL"
+            android:text="Play" />
+    <Button
+        android:id="@+id/btnShowList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnStop"
+        android:layout_alignBottom="@+id/btnStop"
+        android:layout_toEndOf="@+id/btnStop"
+        android:text="Showlist" />
+    </RelativeLayout>
