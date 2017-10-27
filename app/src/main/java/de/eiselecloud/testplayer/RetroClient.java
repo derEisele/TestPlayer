@@ -12,7 +12,7 @@ public class RetroClient {
     /********
      * URLS
      *******/
-    private static String ROOT_URL = "http://192.168.100.10:8080/api/";
+    private static String ROOT_URL = "http://192.168.178.107:1234/api/";
 
     /**
      * Get Retrofit Instance

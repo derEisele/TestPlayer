@@ -129,6 +129,20 @@ class Show {
 
 class ShowDetailed extends Show{
 
+    private ArrayList<Season> seasons = new ArrayList<>();
+
+    public ArrayList<Season> getSeasons(){
+        return seasons;
+    }
+
+    public void setSeasons(ArrayList<Season> seasons) {
+        this.seasons = seasons;
+    }
+
+
+}
+
+class Season{
     private ArrayList<Episode> episodes = new ArrayList<>();
 
     public ArrayList<Episode> getEpisodes(){
@@ -137,6 +151,18 @@ class ShowDetailed extends Show{
 
     public void setEpisodes(ArrayList<Episode> episodes) {
         this.episodes = episodes;
+    }
+
+    @SerializedName("season")
+    @Expose
+    private Integer season;
+
+    public Integer getSeason() {
+        return season;
+    }
+
+    private void setSeason(Integer season) {
+        this.season = season;
     }
 }
 

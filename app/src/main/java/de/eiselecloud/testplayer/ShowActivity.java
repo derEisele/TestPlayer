@@ -17,6 +17,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -28,6 +29,7 @@ import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -61,8 +63,6 @@ public class ShowActivity extends AppCompatActivity {
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.show_toolbar_layout);
         toolbar = (Toolbar) findViewById(R.id.show_toolbar);
         tabLayout.addTab(tabLayout.newTab().setText("Overview"));
-        tabLayout.addTab(tabLayout.newTab().setText("Season 1"));
-        tabLayout.addTab(tabLayout.newTab().setText("Season 2"));
 
         setSupportActionBar(toolbar);
         loadInfo();
@@ -93,6 +93,15 @@ public class ShowActivity extends AppCompatActivity {
                         //Snackbar.make(parentView, banner, Snackbar.LENGTH_LONG).show();
                         toolbarLayout.setTitle(title);
                         setToolbarBackground(response.body().getPoster());
+
+                        ArrayList<Season> seasons = response.body().getSeasons();
+                        Log.e("GLASS", "Success");
+
+                        for (Season s: seasons) {
+                            int seasonNumber = s.getSeason();
+                            tabLayout.addTab(tabLayout.newTab().setText("Season " + seasonNumber));
+
+                        }
 
                         //episodeList = response.body().getEpisodes();
                         //adapter = new MyEpisodelistlistAdapter(ShowActivity.this, episodeList);
