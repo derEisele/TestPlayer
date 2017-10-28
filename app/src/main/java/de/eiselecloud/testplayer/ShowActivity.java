@@ -104,7 +104,9 @@ public class ShowActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
                         for (Season s: seasons) {
                             int seasonNumber = s.getSeason();
-                            adapter.addItem(new ShowTabSeason(), "Season " + seasonNumber);
+                            ShowTabSeason tabSeason = new ShowTabSeason();
+                            adapter.addItem(tabSeason, "Season " + seasonNumber);
+                            tabSeason.loadEpisodes(s.getEpisodes());
                             adapter.notifyDataSetChanged();
                         }
 
