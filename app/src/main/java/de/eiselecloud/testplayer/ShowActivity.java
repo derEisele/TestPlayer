@@ -123,6 +123,64 @@ public class ShowActivity extends AppCompatActivity {
         }
     }
 
+    Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            Palette.Swatch vibrantSwatch = Palette.from(bitmap).generate().getVibrantSwatch();
+            //Palette.Swatch dominantSwatch = Palette.from(bitmap).generate().getDominantSwatch();
+
+            Palette.Swatch mySwatch;
+
+            if (vibrantSwatch != null){
+                mySwatch = vibrantSwatch;
+            } else {
+                Snackbar.make(parentView, "Use dominant swatch", Snackbar.LENGTH_LONG).show();
+                mySwatch = Palette.from(bitmap).generate().getDominantSwatch();
+            }
+
+
+            if (mySwatch == null) {
+                Snackbar.make(parentView, "Unable to create swatch", Snackbar.LENGTH_LONG).show();
+            }else{
+
+                getWindow().setStatusBarColor(mySwatch.getRgb());
+                //toolbarLayout.setBackgroundColor(vibrantSwatch.getRgb());
+                toolbarLayout.setContentScrimColor(mySwatch.getRgb());
+                tabLayout.setBackgroundColor(mySwatch.getRgb());
+
+
+                float lumi = mySwatch.getHsl()[2];
+                Log.i("GLASS", "lumi: " + lumi);
+                int textColor;
+
+                if (lumi > 0.5){
+                    textColor = Color.parseColor("#000000");
+                }else{
+                    textColor = Color.parseColor("#FFFFFF");
+                }
+                
+                toolbarLayout.setCollapsedTitleTextColor(textColor);
+                tabLayout.setTabTextColors(textColor, textColor);
+                tabLayout.setSelectedTabIndicatorColor(textColor);
+
+
+
+            }
+            toolbarImageView.setBackground(new BitmapDrawable(getApplicationContext().getResources(), bitmap));
+            //toolbarLayout.setBackground(new BitmapDrawable(getApplicationContext().getResources(), bitmap));
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+            Snackbar.make(parentView, "Failed to load image", Snackbar.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+        }
+    };
+
 
     private void setToolbarBackground(String url) {
 
@@ -131,49 +189,7 @@ public class ShowActivity extends AppCompatActivity {
         Picasso.with(getApplicationContext())
                 .load(url).resize(x, y).centerCrop()
                 .placeholder(R.mipmap.ic_launcher)
-                .into(new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                Palette.Swatch vibrantSwatch = Palette.from(bitmap).generate().getVibrantSwatch();
-                //Palette.Swatch dominantSwatch = Palette.from(bitmap).generate().getDominantSwatch();
-
-                Palette.Swatch mySwatch;
-
-                if (vibrantSwatch != null){
-                    mySwatch = vibrantSwatch;
-                } else {
-                    Snackbar.make(parentView, "Use dominant swatch", Snackbar.LENGTH_LONG).show();
-                    mySwatch = Palette.from(bitmap).generate().getDominantSwatch();
-                }
-
-
-                if (mySwatch == null) {
-                    Snackbar.make(parentView, "Unable to create swatch", Snackbar.LENGTH_LONG).show();
-                }else{
-
-                    getWindow().setStatusBarColor(mySwatch.getRgb());
-                    //toolbarLayout.setBackgroundColor(vibrantSwatch.getRgb());
-                    toolbarLayout.setContentScrimColor(mySwatch.getRgb());
-                    tabLayout.setBackgroundColor(mySwatch.getRgb());
-                    toolbarLayout.setCollapsedTitleTextColor(mySwatch.getBodyTextColor());
-
-
-
-                }
-                toolbarImageView.setBackground(new BitmapDrawable(getApplicationContext().getResources(), bitmap));
-                //toolbarLayout.setBackground(new BitmapDrawable(getApplicationContext().getResources(), bitmap));
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                Snackbar.make(parentView, "Failed to load image", Snackbar.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-            }
-        });
+                .into(target);
     }
 
     private boolean isNetworkConnected() {
@@ -181,4 +197,6 @@ public class ShowActivity extends AppCompatActivity {
 
         return cm.getActiveNetworkInfo() != null;
     }
+
+
 }
