@@ -2,42 +2,34 @@ package de.eiselecloud.testplayer;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
+
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ShowActivity extends AppCompatActivity {
+public class ShowActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
 
     private int showID;
     private String title;
@@ -46,6 +38,8 @@ public class ShowActivity extends AppCompatActivity {
     private ImageView toolbarImageView;
     private Toolbar toolbar;
     private TabLayout tabLayout;
+    private MyShowPagerAdapter adapter;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +51,23 @@ public class ShowActivity extends AppCompatActivity {
             showID = b.getInt("showID");
 
         setContentView(R.layout.activity_show);
-        parentView = findViewById(R.id.show_parentLayout);
-        tabLayout = (TabLayout) findViewById(R.id.show_tabs);
+        parentView = findViewById(R.id.show_parent);
+
         toolbarImageView = (ImageView) findViewById(R.id.show_toolbarImageView);
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.show_toolbar_layout);
         toolbar = (Toolbar) findViewById(R.id.show_toolbar);
-        tabLayout.addTab(tabLayout.newTab().setText("Overview"));
+
+
+        viewPager = (ViewPager) findViewById(R.id.show_viewpager);
+
+        if(viewPager != null){
+            setupViewPager(viewPager);
+        }
+
+        tabLayout = (TabLayout) findViewById(R.id.show_tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
+        tabLayout.setOnTabSelectedListener(this);
 
         setSupportActionBar(toolbar);
         loadInfo();
@@ -95,12 +100,12 @@ public class ShowActivity extends AppCompatActivity {
                         setToolbarBackground(response.body().getPoster());
 
                         ArrayList<Season> seasons = response.body().getSeasons();
-                        Log.e("GLASS", "Success");
+                        adapter.getOverview().setDescription(response.body().getDescr());
 
                         for (Season s: seasons) {
                             int seasonNumber = s.getSeason();
-                            tabLayout.addTab(tabLayout.newTab().setText("Season " + seasonNumber));
-
+                            adapter.addItem(new ShowTabSeason(), "Season " + seasonNumber);
+                            adapter.notifyDataSetChanged();
                         }
 
                         //episodeList = response.body().getEpisodes();
@@ -121,6 +126,28 @@ public class ShowActivity extends AppCompatActivity {
         } else {
             Snackbar.make(parentView, R.string.string_internet_connection_not_available, Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    private void setupViewPager(ViewPager viewPager){
+        Log.i("GLASS", "Setup Viewpager");
+        adapter = new MyShowPagerAdapter(getSupportFragmentManager());
+        adapter.addItem(new ShowTabOverview(), "Overview");
+        viewPager.setAdapter(adapter);
+    }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        viewPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
     }
 
     Target target = new Target() {
@@ -158,7 +185,7 @@ public class ShowActivity extends AppCompatActivity {
                 }else{
                     textColor = Color.parseColor("#FFFFFF");
                 }
-                
+
                 toolbarLayout.setCollapsedTitleTextColor(textColor);
                 tabLayout.setTabTextColors(textColor, textColor);
                 tabLayout.setSelectedTabIndicatorColor(textColor);
